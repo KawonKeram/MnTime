@@ -2,7 +2,7 @@
 #include <string.h>
 #include "eval_timeMn.h"
 
-uint64_t TimeMn_GetTicks(mntime_t time)
+uint64_t mntime_GetTicks(mntime_t time)
 {
     uint32_t years = time.year;
     uint32_t leapYearsLast = years / 4  + years / 400 - years/100 ;
@@ -26,11 +26,13 @@ uint64_t TimeMn_GetTicks(mntime_t time)
     }
 
     uint32_t mSec = time.hour * 3600000 + time.min * 60000 + time.sec * 1000 + time.ms;
-
     return ((uint64_t)(days) * 86400000) + mSec;
+	
+	uint32_t dayTicks = time.hour * MNTIME_TICK_PER_HOUR + time.min * MNTIME_TICK_PER_MIN + time.sec * MNTIME_TICK_PER_SEC + time.tickS;
+    return ((uint64_t)(days) * MNTIME_TICK_PER_DAY) + dayTicks;
 }
 
-mntime_t TimeMn_GetTimeMn(uint64_t ticks)
+mntime_t mntime_GetMnTime(uint64_t ticks)
 {
     mntime_t timeRet;
 
@@ -40,30 +42,30 @@ mntime_t TimeMn_GetTimeMn(uint64_t ticks)
     timeRet.hour = 0;
     timeRet.min = 0;
     timeRet.sec = 0;
-    timeRet.ms = 0;
+    timeRet.tickS = 0;
 
-    uint32_t daysCount = (uint32_t)(ticks / TIMEMN_TICK_PER_DAY);
-    uint32_t msCount = (uint32_t)(ticks % TIMEMN_TICK_PER_DAY);
+    uint32_t daysCount = (uint32_t)(ticks / MNTIME_TICK_PER_DAY);
+    uint32_t msCount = (uint32_t)(ticks % MNTIME_TICK_PER_DAY);
 
-    uint32_t fourHoundredYersCount = daysCount / TIMEMN_DAYS_PER_4HOUNDRED_YEARS;
-    daysCount -= fourHoundredYersCount * TIMEMN_DAYS_PER_4HOUNDRED_YEARS;
+    uint32_t fourHoundredYersCount = daysCount / MNTIME_DAYS_PER_4HOUNDRED_YEARS;
+    daysCount -= fourHoundredYersCount * MNTIME_DAYS_PER_4HOUNDRED_YEARS;
 
-    uint32_t houndredYersCount = daysCount / TIMEMN_DAYS_PER_HOUNDRED_YEARS;
+    uint32_t houndredYersCount = daysCount / MNTIME_DAYS_PER_HOUNDRED_YEARS;
     if(houndredYersCount == 4)
     {
         houndredYersCount = 3;
     }
-    daysCount -= houndredYersCount * TIMEMN_DAYS_PER_HOUNDRED_YEARS;
+    daysCount -= houndredYersCount * MNTIME_DAYS_PER_HOUNDRED_YEARS;
 
-    uint32_t fourYearsCount = daysCount / TIMEMN_DAYS_PER_4YEARS;
-    daysCount -= fourYearsCount * TIMEMN_DAYS_PER_4YEARS;
+    uint32_t fourYearsCount = daysCount / MNTIME_DAYS_PER_4YEARS;
+    daysCount -= fourYearsCount * MNTIME_DAYS_PER_4YEARS;
 
-    uint32_t yearsCount = daysCount / TIMEMN_DAYS_PER_YEARS;
+    uint32_t yearsCount = daysCount / MNTIME_DAYS_PER_YEARS;
     if (yearsCount == 4)
     {
         yearsCount = 3;
     }
-    daysCount -= yearsCount * TIMEMN_DAYS_PER_YEARS;
+    daysCount -= yearsCount * MNTIME_DAYS_PER_YEARS;
 
     timeRet.year = fourHoundredYersCount * 400 + houndredYersCount * 100 + fourYearsCount * 4 + yearsCount + 1;
     timeRet.month = 0;
@@ -136,14 +138,14 @@ mntime_t TimeMn_GetTimeMn(uint64_t ticks)
         daysCount -= 31 + 28 + 31 + 30 + 31 + 30 + 31 + 31 + 30 + 31 + 30 + leapYearDay;
     }
 
-    timeRet.hour = msCount / TIMEMN_TICK_PER_HOUR;
-    msCount -= timeRet.hour * TIMEMN_TICK_PER_HOUR;
+    timeRet.hour = msCount / MNTIME_TICK_PER_HOUR;
+    msCount -= timeRet.hour * MNTIME_TICK_PER_HOUR;
 
-    timeRet.min = msCount / TIMEMN_TICK_PER_MIN;
-    msCount -= timeRet.min * TIMEMN_TICK_PER_MIN;
+    timeRet.min = msCount / MNTIME_TICK_PER_MIN;
+    msCount -= timeRet.min * MNTIME_TICK_PER_MIN;
 
-    timeRet.sec = msCount / TIMEMN_TICK_PER_SEC;
-    msCount -= timeRet.sec * TIMEMN_TICK_PER_SEC;
+    timeRet.sec = msCount / MNTIME_TICK_PER_SEC;
+    msCount -= timeRet.sec * MNTIME_TICK_PER_SEC;
 
     timeRet.day = daysCount;
     timeRet.ms = msCount;
