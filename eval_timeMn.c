@@ -1,13 +1,12 @@
-#include "traconMonitor_eval.h"
+#include <stdint.h>
+#include <string.h>
+#include "eval_timeMn.h"
 
-
-uint64_t TimeMn_GetTicks(TimeMn time)
+uint64_t TimeMn_GetTicks(mntime_t time)
 {
     uint32_t years = time.year;
     uint32_t leapYearsLast = years / 4  + years / 400 - years/100 ;
     uint32_t days = (years-1) * 365 + leapYearsLast + time.day - 1;
-
-
 
     switch (time.month)
     {
@@ -31,9 +30,9 @@ uint64_t TimeMn_GetTicks(TimeMn time)
     return ((uint64_t)(days) * 86400000) + mSec;
 }
 
-TimeMn TimeMn_GetTimeMn(uint64_t ticks)
+mntime_t TimeMn_GetTimeMn(uint64_t ticks)
 {
-    TimeMn timeRet;
+    mntime_t timeRet;
 
     timeRet.year = 0;
     timeRet.month = 0;

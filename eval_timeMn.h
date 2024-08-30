@@ -20,11 +20,11 @@ typedef struct _timeMn
     uint32_t sec;
     uint32_t ms;
     uint32_t IsFix;
-}TimeMn;
+}mntime_t;
 
 
-uint64_t TimeMn_GetTicks(TimeMn);
-TimeMn TimeMn_GetTimeMn(uint64_t ticks);
+uint64_t TimeMn_GetTicks(mntime_t);
+mntime_t TimeMn_GetTimeMn(uint64_t ticks);
 
 #endif // __EVAL_TIMEMN_H
 
